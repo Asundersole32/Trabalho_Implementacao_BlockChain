@@ -22,9 +22,11 @@ docker-compose up --build
 
 # Ou em segundo plano
 docker-compose up -d
+```
 
 ### Comandos Úteis
 
+```bash
 # Ver logs
 docker-compose logs -f
 
@@ -36,3 +38,4 @@ docker-compose exec blockchain-app python app.py
 
 # Ver volumes
 docker volume ls
+```
