@@ -1,0 +1,59 @@
+services:
+  ganache:
+    image: trufflesuite/ganache-cli:latest
+    container_name: ganache-cli
+    command: [
+      "--accounts=10",
+      "--defaultBalanceEther=1000000", 
+      "--deterministic",
+      "--host=0.0.0.0",
+      "--port=8545",
+      "--networkId=1337",
+      "--db=/data",
+      "--mnemonic=\"myth like bonus scare over problem client lizard pioneer submit female collect\""
+    ]
+    ports:
+      - "8545:8545"
+    volumes:
+      - ganache_data:/data
+    networks:
+      - blockchain-network
+
+  blockchain-app:
+    build: .
+    container_name: blockchain-python-app
+    depends_on:
+      - ganache
+    environment:
+      - GANACHE_URL=http://ganache:8545
+      - PRIVATE_KEY=0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d
+    volumes:
+      - .:/app
+    stdin_open: true
+    tty: true
+    networks:
+      - blockchain-network
+    ports:
+      - "5000:5000"
+
+  web-interface:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: blockchain-web-interface
+    depends_on:
+      - ganache
+      - blockchain-app
+    ports:
+      - "8080:8080"
+    networks:
+      - blockchain-network
+    environment:
+      - FLASK_ENV=development
+
+volumes:
+  ganache_data:
+
+networks:
+  blockchain-network:
+    driver: bridge
