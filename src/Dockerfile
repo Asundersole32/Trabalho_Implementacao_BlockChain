@@ -5,6 +5,7 @@ WORKDIR /app
 # Instalar dependências do sistema
 RUN apt-get update && apt-get install -y \
     gcc \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar requirements e instalar dependências Python
@@ -15,9 +16,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app.py .
 COPY .env .
 
+# Expor porta da aplicação web
+EXPOSE 5000
+
 # Criar usuário não-root para segurança
 RUN useradd -m -u 1000 blockchain-user
 USER blockchain-user
 
-# Comando para executar a aplicação
+# Comando para executar a aplicação web diretamente
 CMD ["python", "app.py"]

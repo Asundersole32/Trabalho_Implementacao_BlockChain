@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   ganache:
     image: trufflesuite/ganache-cli:latest
@@ -10,7 +12,7 @@ services:
       "--port=8545",
       "--networkId=1337",
       "--db=/data",
-      "--mnemonic=\"myth like bonus scare over problem client lizard pioneer submit female collect\""
+      "--mnemonic=myth like bonus scare over problem client lizard pioneer submit female collect"
     ]
     ports:
       - "8545:8545"
@@ -29,27 +31,15 @@ services:
       - PRIVATE_KEY=0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d
     volumes:
       - .:/app
-    stdin_open: true
-    tty: true
     networks:
       - blockchain-network
     ports:
       - "5000:5000"
-
-  web-interface:
-    build:
-      context: .
-      dockerfile: Dockerfile.web
-    container_name: blockchain-web-interface
-    depends_on:
-      - ganache
-      - blockchain-app
-    ports:
-      - "8080:8080"
-    networks:
-      - blockchain-network
-    environment:
-      - FLASK_ENV=development
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   ganache_data:
